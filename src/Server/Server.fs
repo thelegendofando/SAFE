@@ -1,6 +1,5 @@
 open System
 open System.IO
-open System.Threading.Tasks
 
 open Microsoft.AspNetCore
 open Microsoft.AspNetCore.Builder
@@ -20,19 +19,19 @@ let port =
     "SERVER_PORT"
     |> tryGetEnv |> Option.map uint16 |> Option.defaultValue 8085us
 
-let mutable value = { Value = 42 }
+let mutable value = State.Counter { Value = 42 }
 
 let init next ctx = 
     task {
-        printfn "Getting value %i" value.Value
+        printfn "Getting value %A" value
         return! json value next ctx
     }
 
 let update next (ctx : HttpContext) =
     task {
         printf "Setting value "
-        let! newValue = ctx.BindJsonAsync<Counter>()
-        printfn "%i" newValue.Value
+        let! newValue = ctx.BindJsonAsync<State>()
+        printfn "%A" newValue
         value <- newValue
 
         return! Successful.OK "" next ctx
@@ -46,13 +45,7 @@ let webApp =
         POST >=> choose [
             route "/api/update" >=> update
         ]
-        //route "/api/init" >=>
-        //    fun next ctx ->
-        //        task {
-        //            return! json value next ctx
-        //        }
     ]
-    
 
 let configureApp (app : IApplicationBuilder) =
     app.UseDefaultFiles()
