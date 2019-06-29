@@ -1,120 +1,150 @@
-module Client
+module Flap
 
-open Elmish
-open Elmish.React
-open Fable.React
-open Fable.React.Props
-open Thoth.Fetch
-open Fulma
+open Fable.Core
+open Browser.Types
+open Browser
 
-open Shared
+module Keyboard =
 
-type Model = { State: State option }
+    let mutable keysPressed = Set.empty
 
-type Msg =
-| Increment
-| Decrement
-| InitialCountLoaded of State
+    /// Returns 1 if key with given code is pressed
+    let code x =
+        if keysPressed.Contains(x) then 1 else 0
 
-let initialCounter () = Fetch.fetchAs<State> "/api/init"
-let updateServer (counter:State) =
-    promise {
-        let! response = Fetch.post("/api/update", counter)
-        printfn "%O" response
-    } 
-    |> Promise.start
+    /// Update the state of the set for given key event
+    let update (e : KeyboardEvent, pressed) =
+        let keyCode = int e.keyCode
+        let op =  if pressed then Set.add else Set.remove
+        keysPressed <- op keyCode keysPressed
 
-let init () : Model * Cmd<Msg> =
-    let initialModel = { State = None }
-    let loadCountCmd =
-        Cmd.OfPromise.perform initialCounter () InitialCountLoaded
-    initialModel, loadCountCmd
+    /// (move horizontal, move vertical)
+    /// 1 = move, 0 = don't move
+    let arrows () =
+        (0, code 32)
 
-let update (msg : Msg) (currentModel : Model) : Model * Cmd<Msg> =
-    let getCounter (Counter state) = state
-    let next state fn =
-        let current = getCounter state
-        State.Counter { current with Value = fn current.Value 1 }
-    match currentModel.State, msg with
-    | Some counter, Increment ->
-        let nextValue = next counter (+)
-        let nextModel = { currentModel with State = Some nextValue }
-        updateServer nextValue |> ignore
-        nextModel, Cmd.none
-    | Some counter, Decrement ->
-        let nextValue = next counter (-)
-        let nextModel = { currentModel with State = Some nextValue }
-        updateServer nextValue |> ignore
-        nextModel, Cmd.none
-    | _, InitialCountLoaded initialCount->
-        let nextModel = { State = Some initialCount }
-        nextModel, Cmd.none
-    | _ -> currentModel, Cmd.none
+    let initKeyboard () =
+        document.addEventListener("keydown", fun e -> update(e :?> _, true))
+        document.addEventListener("keyup", fun e -> update(e :?> _, false))
 
+module Canvas =
+    // Get the canvas context for drawing
+    let private canvas = document.getElementsByTagName("canvas").[0] :?> HTMLCanvasElement
+    let private context = canvas.getContext_2d()
 
-let safeComponents =
-    let components =
-        span [ ]
-           [
-             a [ Href "https://github.com/giraffe-fsharp/Giraffe" ] [ str "Giraffe" ]
-             str ", "
-             a [ Href "http://fable.io" ] [ str "Fable" ]
-             str ", "
-             a [ Href "https://elmish.github.io/elmish/" ] [ str "Elmish" ]
-             str ", "
-             a [ Href "https://fulma.github.io/Fulma" ] [ str "Fulma" ]
+    ///Width, Height of Canvas
+    let w, h = canvas.width, canvas.height
+    
+    /// Create image using the specified data
+    let private createImage data =
+      let img = document.createElement("img") :?> HTMLImageElement
+      img.src <- data
+      img
 
-           ]
+    let private drawImage x y width height img =
+        let ctx = context
+        ctx.drawImage ((U3.Case1 img), x, y, width, height)
 
-    span [ ]
-        [ strong [] [ str "SAFE innit" ]
-          str " powered by: "
-          components ]
+    let private drawImage' x y img =
+        let ctx = context
+        ctx.drawImage ((U3.Case1 img), x, y)
 
-let getStringValue state =
-    match state with
-    | Counter c -> string c.Value
+    ///Fill the canvas with an image
+    let drawBackground (src:string) =
+        src
+        |> createImage
+        |> drawImage 0. 0. canvas.width canvas.height
 
-let show = function
-| { State = Some counter } -> getStringValue counter
-| { State = None   } -> "Loading..."
+    ///Fill the canvas with an image
+    let drawSprite x y (src:string) =
+        src
+        |> createImage
+        |> drawImage' x y
 
-let button txt onClick =
-    Button.button
-        [ Button.IsFullWidth
-          Button.Color IsPrimary
-          Button.OnClick onClick ]
-        [ str txt ]
+    let drawTubes scroll level =
+        printf "%f" scroll
+        let drawTube (x,y) =
+            "http://flappycreator.com/default/tube1.png"
+            |> createImage
+            |> drawImage' (x-scroll) (-320.+y)
 
-let view (model : Model) (dispatch : Msg -> unit) =
-    div []
-        [ Navbar.navbar [ Navbar.Color IsPrimary ]
-            [ Navbar.Item.div [ ]
-                [ Heading.h2 [ ]
-                    [ str "SAFE Template" ] ] ]
+            "http://flappycreator.com/default/tube2.png"
+            |> createImage
+            |> drawImage' (x-scroll) (y+100.)
 
-          Container.container []
-              [ Content.content [ Content.Modifiers [ Modifier.TextAlignment (Screen.All, TextAlignment.Centered) ] ]
-                    [ Heading.h3 [] [ str ("Press buttons to manipulate counter: " + show model) ] ]
-                Columns.columns []
-                    [ Column.column [] [ button "-" (fun _ -> dispatch Decrement) ]
-                      Column.column [] [ button "+" (fun _ -> dispatch Increment) ] ] ]
+        for (x,y) in level do drawTube (x,y)
 
-          Footer.footer [ ]
-                [ Content.content [ Content.Modifiers [ Modifier.TextAlignment (Screen.All, TextAlignment.Centered) ] ]
-                    [ safeComponents ] ] ]
+module Level =
+    /// Generates the level's tube positions
+    let generate n =
+       let rand = System.Random()
+       let xOffset = Canvas.w / 2.
+       let xGap = 150
+       let yMin, yMax = 32, 160
+       [for i in 1..n -> xOffset+ float (i*xGap), float (yMin+rand.Next(yMax))]
 
-#if DEBUG
-open Elmish.Debug
-open Elmish.HMR
-#endif
+module Physics =
 
-Program.mkProgram init update view
-#if DEBUG
-|> Program.withConsoleTrace
-#endif
-|> Program.withReactBatched "elmish-app"
-#if DEBUG
-|> Program.withDebugger
-#endif
-|> Program.run
+    type SpriteModel =
+        { x:float; y:float;
+          vx:float; vy:float;
+          progress: float }
+
+    /// If the Y direction is up (y > 0),
+    /// then create sprite with a y velocity 'vy'
+    let jump (_,y) m =
+        if y > 0 then { m with vy = -5. } else m
+
+    let bounded n =
+        min (Canvas.h-32.) (max 0. n)
+
+    /// If sprite is in the air, then its "up" velocity is decreasing
+    let gravity m =
+        if bounded m.y = m.y then { m with vy = m.vy + 0.2 } else m
+
+    /// Apply physics - move sprite according to the current velocities
+    let physics m =
+        printfn "%A" m
+        { m with x = m.x + m.vx; y = bounded (m.y + m.vy) }
+
+    /// Move sprite along in the world
+    let progress m =
+        { m with progress = m.progress + 1. }
+
+    let moveSprite dir sprite =
+        if sprite.progress > 0. || dir > (0,0) then
+            sprite
+            |> progress
+            |> jump dir
+            |> gravity 
+            |> physics
+        else
+            sprite
+     
+open Canvas
+open Physics
+
+let origin =
+    // Sample is running in an iframe, so get the location of parent
+    let topLocation = window.top.location
+    topLocation.origin + topLocation.pathname
+
+let render level (sprite: SpriteModel) =
+    "http://flappycreator.com/default/bg.png"
+    |> drawBackground
+
+    drawTubes sprite.progress level
+
+    "http://flappycreator.com/default/bird_sing.png"
+    |> drawSprite sprite.x sprite.y
+
+Keyboard.initKeyboard()
+let level = Level.generate 100
+
+let rec update game () =
+    let sprite = game |> Physics.moveSprite (Keyboard.arrows())
+    render level sprite
+    window.setTimeout(update sprite, 1000 / 60) |> ignore
+
+let game = { x=Canvas.w/2.-32.; y=Canvas.h/2.; vx=0.; vy=0.; progress=0.}
+update game ()
