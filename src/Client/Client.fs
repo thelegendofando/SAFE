@@ -25,7 +25,7 @@ module Keyboard =
 
     /// (move horizontal, move vertical)
     /// 1 = move, 0 = don't move
-    let arrows () =
+    let movement () =
         (0, code 32)
 
     let initKeyboard () =
@@ -92,10 +92,28 @@ module Level =
        let yMin, yMax = 32, 160
        [for i in 1..n -> xOffset+ float (i*xGap), float (yMin+rand.Next(yMax))]
 
+type GameState =
+| NotStarted
+| Started
+
+module GameState =
+    let checkForStart dir state =
+        match state, dir with
+        | NotStarted, (_, 1) -> Started
+        | NotStarted, _ -> NotStarted
+        | Started, _ -> Started
+
+    let reactToCollision hasCollided oldState =
+        if hasCollided then NotStarted
+        else oldState
+
 type SpriteModel =
     { x:float; y:float;
       vx:float; vy:float;
       progress: float }
+
+module SpriteModel =
+    let start = { x=Canvas.w/2.-32.; y=Canvas.h/2.; vx=0.; vy=0.; progress=0.}
 
 module Physics =
     /// If the Y direction is up (y > 0),
@@ -115,21 +133,23 @@ module Physics =
         { m with x = m.x + m.vx; y = bounded (m.y + m.vy) }
 
     /// Move sprite along in the world
-    let progress m =
-        { m with progress = m.progress + 3. }
+    let progress s =
+        { s with progress = s.progress + 3. }
 
-    let moveSprite dir sprite =
-        if sprite.progress > 0. || dir > (0,0) then
+    let moveSprite dir state sprite =
+        let move dir sprite =
             sprite
             |> progress
             |> jump dir
             |> gravity 
             |> physics
-        else
-            sprite
+
+        match state with
+        | NotStarted -> SpriteModel.start
+        | Started -> move dir sprite
 
 module Collision =
-    let check level sprite  =
+    let check level sprite =
         let hitsAnyTube (x,y) game =
             let tubeX = x - game.progress
 
@@ -142,15 +162,9 @@ module Collision =
             else
                 false
 
-        let collides =
-            level
-            |> List.map (fun (x,y) -> hitsAnyTube (x,y) sprite)
-            |> List.exists id
-
-        if collides then
-            { sprite with progress = 0. }
-        else
-            sprite
+        level
+        |> List.map (fun (x,y) -> hitsAnyTube (x,y) sprite)
+        |> List.exists id
 
 let origin =
     // Sample is running in an iframe, so get the location of parent
@@ -169,13 +183,17 @@ let render level (sprite: SpriteModel) =
 Keyboard.initKeyboard()
 let level = Level.generate 100
 
-let rec update sprite () =
-    let sprite =
-        sprite
-        |> Physics.moveSprite (Keyboard.arrows())
-        |> Collision.check level
-    render level sprite
-    window.setTimeout(update sprite, 1000 / 60) |> ignore
+let rec update sprite gameState ()=
+    let dir = Keyboard.movement()
+    let sprite = sprite |> Physics.moveSprite dir gameState
+    let hasCollision = sprite |> Collision.check level
 
-let sprite = { x=Canvas.w/2.-32.; y=Canvas.h/2.; vx=0.; vy=0.; progress=0.}
-update sprite ()
+    let gameState =
+        gameState
+        |> GameState.checkForStart dir
+        |> GameState.reactToCollision hasCollision
+
+    render level sprite
+    window.setTimeout((update sprite gameState), 1000 / 60) |> ignore
+
+update SpriteModel.start NotStarted ()
