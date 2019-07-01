@@ -10,6 +10,11 @@ module Images =
     let tube1 = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADQAAAFACAMAAADEYq+6AAAAA3NCSVQICAjb4U/gAAAAh1BMVEX////k/Yvf+Yfb9YXZ84PS7X7R7X7R7XzJ5XfJ5njJ5XjE4XPD4XTA3nDA3XC31Wq102iszGKlxVyhw1qXulKVt1CNsUuFqkSFqUSDqESCp0N5nz11nTp2nTp2nDlwlzZwlzVvlzZokTBnkDBnkS9giSpdhyhehyhahSZahSVVgCJWgCJUOEcmarqzAAAALXRSTlMA///////////////////////////////////////////////////////////weBRqAAAACXBIWXMAAAsSAAALEgHS3X78AAAAHHRFWHRTb2Z0d2FyZQBBZG9iZSBGaXJld29ya3MgQ1M26LyyjAAAABR0RVh0Q3JlYXRpb24gVGltZQAyLzkvMTT46LqKAAACWUlEQVR4nO2Z6ZKCMBCEOQRRERFFPFfFW3n/59uy1AJBkswQousO/7+qzmTSmTSapiXJeByGQeD7nY5tm6aum2az6bq+HwRhGEXzeRzv9+f7lyTa9UNCUfSAms0H1OncoPF4sYjjw0Eu5LoPebb9DDHkgaBXhUihn586oaw84X0SgFiFiCJE9UohljxA71WGStqoEpQWIt3cmzzZULk8VCGETi7gPCEhnrzLpU6opOTSoNQsub4HgN7RESxjuVzqhVDykGtSB3GvT2kXAKIjkCcXsSaul7suwFgqQa8OYd1Q/gKQBanrvSKEkocqRF4e0CxRkNyJRZ0bfcatQR6Bgaj3qPfedT9RSkApAaUElBJQSgCSRykBpQQSIEoJaAqjlIBSAnqpkUeQR5BHkEeoW9PziF0fRBkLZSyUsVDGQhkLUB5lLJSxSIAoY6H3E72f6P30v95PciF10/I7HLZoYYBHV0VI4LgDIHXVU+cR6m5C9uai2ujDT66qiUUgjwBAfHmyoM+YluvviHSgApxcAAQwy4pQ3XkEa6ACWJgApD6hei+kzve+EVI5l//tNaEiVVR4+03JB/sQloTsKKh4AWSfrNw2AkCfMVkC/tVUHnNQP0NQmyuzemfAh4cSxIeFIOLuApGQZTUahqHrhtFoWJbjeF6v1+8PBsPhaDSdzmbrdRzvdqdTdci2s1C7nYUmk9lsubxCx2N1iCdPHvQsr9XKy1utNhs5UFaebTtOt5uHOPskDGXlvYJum8tYExoqFmK75coTglibi2qjUsjzHOcZZMN4SJEb/QLFWJFg34TiJAAAAABJRU5ErkJggg=="
     let tube2 = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADQAAAFACAMAAADEYq+6AAAAA3NCSVQICAjb4U/gAAAAh1BMVEX////k/Yvf+Yfb9YXZ84PS7X7R7X7R7XzJ5XfJ5njJ5XjE4XPD4XTA3nDA3XC31Wq102iszGKlxVyhw1qXulKVt1CNsUuFqUSFqkSEqUSCp0N5nz11nTp2nTp2nDlwlzZwlzVvlzZokTBnkDBnkS9giSpdhyhehyhahSZahSVVgCJWgCJUOEcNncuWAAAALXRSTlMA///////////////////////////////////////////////////////////weBRqAAAACXBIWXMAAAsSAAALEgHS3X78AAAAHHRFWHRTb2Z0d2FyZQBBZG9iZSBGaXJld29ya3MgQ1M26LyyjAAAABR0RVh0Q3JlYXRpb24gVGltZQAyLzkvMTT46LqKAAACh0lEQVR4nO2Z15KCQBBFTSAq5oBjRMyy//99W+yuNYJMapuRcpsnHzxVTee+VL4ATwUI9Xqe5ziNRq1WrdZqjUby23E8r9fr94fD8Xgymc0YWy632yg6Hi8XOJQGxH++/T1wyHU55LppaLFYLsPwcDger1d8qNtNm7fbaZinBT06Ig8KwwTKmAeCHs1znFbr2RH7vfSdtCFZcBPIOCOEUNq8drs4SGXeb3AlcdKGboYPHLLVjSqGBv4gYGg+n05Ho8Gg03Hder1ardddt9MZDEaj6XQ+X62i6HTCgYJADAXBZoMHcfOazSzE2HodReczNlS09xjLmtdscigxDwuSm6d0ORLEGMB7ICgIAI4QQneX+36eIzAheWkkjshJWBDE0wjwTkaQvXeSQSDzSgDJi9AWhFu56uBiQc/m8WYpTCMQpA4uFvQ8AECjxgji5vn+Y3A1G4sSKkeW40LyhAVkhBCSFyEmpDYP5IiSBDevNIqB3rmXC4sQBMlWAuVCBcyIvGVe6T0kSCNOL3bYdBFiQe+cue/osPa2sGJuDeAhiQSBzgbQQmXQ90CQvR1WwzwQJF+oDNJIG/J9kVyCBb1DYym6w36i8lGOFZuPmjh+HbKnfOSZdy9C4XmHBqVLww706Ig4xoJAjcUAsi8BcVEwOwAkezkIKl6PkEOAzVI5AIwkVRAkHwCgUaMN8eAyJhDZQZDMEcp6AkF5nygMvtVoQHmO4M3SwOUAKNuWsSC1MIMF0f1UFET3E91Pn3E/UY+gHkE9gnoEaSyksZDGQhoLaSykseBApLFgQP9FY6EtjC4125ca5R7lHqkEpBJQj8CASCUoCiKVgFQCUglIJSCVABcilaBkKsE3yVaUPKIeitMAAAAASUVORK5CYII="
 
+module Random = 
+    let private rng = System.Random()
+    let next max = rng.Next max
+    let nextFloat max = rng.NextDouble() * max
+
 module Keyboard =
     let mutable keysPressed = Set.empty
 
@@ -60,6 +65,12 @@ module Canvas =
         |> createImage
         |> drawImage 0. 0. canvas.width canvas.height
 
+    let drawInfo (i:int) fittest =
+        let ctx = context
+        ctx.font <- "20px Arial";
+        ctx.fillText(i.ToString(), 10., 30.);
+        ctx.fillText(fittest, 10., 50.);
+
     ///Fill the canvas with an image
     let drawSprite x y (src:string) =
         src
@@ -67,7 +78,7 @@ module Canvas =
         |> drawImage' x y
 
     ///Draw all the tubes for the level
-    let drawTubes scroll level =
+    let drawTubes scroll (level: (float * float) list) =
         let drawTube (x,y) =
             Images.tube1
             |> createImage
@@ -86,41 +97,108 @@ module Canvas =
 module Level =
     /// Generates the level's tube positions
     let generate n =
-       let rand = System.Random()
        let xGap = 200
        let xOffset = Canvas.w * (3./4.) - float xGap
        let yMin, yMax = 32, 160
-       [for i in 1..n -> xOffset+ float (i*xGap), float (yMin+rand.Next(yMax))]
+       [for i in 1..n -> xOffset+ float (i*xGap), float (yMin+Random.next(yMax))]
 
-type GameState =
-| NotStarted
-| Started
+type Surroundings =
+    { xDistanceToNextTube: float; yDistanceToMiddleOfNextTube: float }
 
-module GameState =
-    let checkForStart dir state =
-        match state, dir with
-        | NotStarted, (_, 1) -> Started
-        | NotStarted, _ -> NotStarted
-        | Started, _ -> Started
+type Action = Flap | NoFlap
+type Rule = Surroundings -> Action
+type Individual = Rule list
 
-    let reactToCollision hasCollided oldState =
-        if hasCollided then NotStarted
-        else oldState
+module AI =
+    let rule _ : Rule =
+        let prop sur =
+            match Random.next 2 with
+            | 0 -> sur.xDistanceToNextTube 
+            | 1 -> sur.yDistanceToMiddleOfNextTube
+
+        let comparer =
+            match Random.next 2 with
+            | 0 -> (<)
+            | 1 -> (>)
+
+        let action =
+            match Random.next 2 with
+            | 0 -> (Flap, NoFlap)
+            | 1 -> (NoFlap, Flap)
+
+        let distance = Random.nextFloat Canvas.h
+
+        fun sur -> if comparer (prop sur) distance then fst action else snd action
+
+    let individual size = List.init size rule
+    //let population popSize ruleCount = List.init popSize (individual ruleCount)
+
+    let breedCrossover (mum:Individual) (dad:Individual) : Individual =
+        let crossoverPoint = Random.next mum.Length
+        let traits =
+            [
+                mum |> List.take crossoverPoint
+                dad |> List.skip crossoverPoint
+            ] |> List.concat
+        traits
+
+    let mutateRandomRule (rules:Individual) =
+        let t = rules |> Array.ofList
+        t.[Random.next t.Length] <- rule ()
+        t |> List.ofArray
 
 type SpriteModel =
     { x:float; y:float;
       vx:float; vy:float;
-      progress: float }
+      progress: float; crashed: bool;
+      surroundings: Surroundings;
+      traits: Individual }
+
+module Surroundings =
+    let calculate level sprite =
+        let distanceToTube (x,y) sprite =
+            let tubeX = x - (sprite.progress + 32.)
+
+            let dX = tubeX - sprite.x
+            let dY = (sprite.y + 16.) - (y + 50.)
+            { xDistanceToNextTube = dX; yDistanceToMiddleOfNextTube = dY}
+
+        let closestSurroundings =
+            level
+            |> List.map (fun (x,y) -> distanceToTube (x,y) sprite)
+            |> List.filter (fun x -> x.xDistanceToNextTube > 0.)
+            |> List.minBy (fun x -> x.xDistanceToNextTube)//Closest tube which is ahead of us
+
+        { sprite with surroundings = closestSurroundings }
 
 module SpriteModel =
-    let start = { x=Canvas.w/2.-32.; y=Canvas.h/2.; vx=0.; vy=0.; progress=0.}
+    let height() = (Random.nextFloat Canvas.h/2.) + Canvas.h/4.
+    let defaultSurroundings = { xDistanceToNextTube= Canvas.w; yDistanceToMiddleOfNextTube = Canvas.h}
+    let start() =
+        { x=Canvas.w/2.-32.; y=height(); vx=0.; vy=0.; progress=0.;
+        crashed = false; surroundings = defaultSurroundings;
+        traits = AI.individual 25}
+    let next traits =
+        { x=Canvas.w/2.-32.; y=height(); vx=0.; vy=0.; progress=0.;
+        crashed = false; surroundings = defaultSurroundings;
+        traits = traits }
 
 module Physics =
     /// If the Y direction is up (y > 0),
     /// then create sprite with a y velocity 'vy'
-    let jump (_,y) m =
-        if y > 0 then { m with vy = -5. } else m
+    //let jump (_,y) m =
+    //    if y > 0 then { m with vy = -5. } else m
 
+    let jump s =
+        let majorityAction, _ =
+            s.traits
+            |> List.countBy (fun t -> t(s.surroundings))
+            |> List.maxBy (fun (_, count) -> count)
+
+        match majorityAction with
+        | Flap -> { s with vy = -5. }
+        | NoFlap -> s
+        
     let bounded n =
         min (Canvas.h-32.) (max 0. n)
 
@@ -136,64 +214,109 @@ module Physics =
     let progress s =
         { s with progress = s.progress + 3. }
 
-    let moveSprite dir state sprite =
-        let move dir sprite =
+    let moveSprite dir sprite =
+        if sprite.crashed then
+            sprite
+        else 
             sprite
             |> progress
-            |> jump dir
+            |> jump
             |> gravity 
             |> physics
 
-        match state with
-        | NotStarted -> SpriteModel.start
-        | Started -> move dir sprite
-
 module Collision =
+    //TODO: probably easier using surroundings data
     let check level sprite =
         let hitsAnyTube (x,y) game =
             let tubeX = x - game.progress
 
-            let collidesX = game.x > tubeX && game.x < tubeX + 32.
+            let collidesX = game.x + 32. > tubeX && game.x < tubeX + 32.
             let collidesTopY = game.y < y
             let collidesBottomY = game.y > y+100.-32.
 
-            if collidesX && (collidesTopY || collidesBottomY) then
-                true
-            else
-                false
+            collidesX && (collidesTopY || collidesBottomY)
 
-        level
-        |> List.map (fun (x,y) -> hitsAnyTube (x,y) sprite)
-        |> List.exists id
+        let crashed =
+            level
+            |> List.map (fun (x,y) -> hitsAnyTube (x,y) sprite)
+            |> List.exists id
+
+        { sprite with crashed = crashed }
+
+module Population =
+    let breedFittest fittest (currentGeneration: SpriteModel list) =
+        let currentGeneration =
+            currentGeneration
+            |> List.sortByDescending fittest
+            |> List.map (fun x -> x.traits)
+    
+        currentGeneration
+        |> function // take the first two and breed with the rest.
+        | first::second::rest ->
+            [
+                rest |> List.map (fun prevGen -> (AI.breedCrossover first  prevGen) |> AI.mutateRandomRule)
+                rest |> List.map (fun prevGen -> (AI.breedCrossover second prevGen) |> AI.mutateRandomRule)
+            ] |> List.concat
+        | _ -> failwithf "Population is too small (%i) for another generation." currentGeneration.Length
+        |> List.take currentGeneration.Length
+        |> List.map (fun traits -> SpriteModel.next traits)
 
 let origin =
     // Sample is running in an iframe, so get the location of parent
     let topLocation = window.top.location
     topLocation.origin + topLocation.pathname
 
-let render level (sprite: SpriteModel) =
+let fitness = (fun x -> x.progress, abs (x.surroundings.yDistanceToMiddleOfNextTube))
+
+let render level sprites i =
     Images.background
     |> Canvas.drawBackground
 
-    Canvas.drawTubes sprite.progress level
+    let fittest =
+        sprites
+        |> List.sortByDescending fitness
+        |> List.map (fun x -> (x.progress, x.surroundings.yDistanceToMiddleOfNextTube))
+        |> List.head
+        |> sprintf "%A"
 
-    Images.bird
-    |> Canvas.drawSprite sprite.x sprite.y
+    Canvas.drawInfo i fittest
+
+    let maxP = sprites |> List.maxBy (fun s -> s.progress)
+    Canvas.drawTubes maxP.progress level
+
+    let drawSprite sprite =
+        if not sprite.crashed then
+            Images.bird
+            |> Canvas.drawSprite sprite.x sprite.y
+
+    sprites
+    |> List.map drawSprite
+    |> ignore
 
 Keyboard.initKeyboard()
 let level = Level.generate 100
 
-let rec update sprite gameState ()=
+let rec update sprites iteration () =
     let dir = Keyboard.movement()
-    let sprite = sprite |> Physics.moveSprite dir gameState
-    let hasCollision = sprite |> Collision.check level
 
-    let gameState =
-        gameState
-        |> GameState.checkForStart dir
-        |> GameState.reactToCollision hasCollision
+    let move s =
+        s
+        |> Collision.check level
+        |> Physics.moveSprite dir
+        |> Surroundings.calculate level
 
-    render level sprite
-    window.setTimeout((update sprite gameState), 1000 / 60) |> ignore
+    let sprites =
+        sprites
+        |> List.map move
 
-update SpriteModel.start NotStarted ()
+    let sprites, iteration =
+        if sprites |> List.forall (fun s -> s.crashed) then
+            (sprites |> Population.breedFittest fitness, iteration+1)
+        else
+            (sprites, iteration)
+
+    render level sprites iteration
+    window.setTimeout((update sprites iteration), 1000 / 60) |> ignore
+
+let population = List.init 100 (fun _ -> SpriteModel.start())
+update population 0 ()
