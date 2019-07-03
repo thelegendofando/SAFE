@@ -1,6 +1,7 @@
-# SAFE Template
+# Flappy Bird
 
-This template can be used to generate a full-stack web application using the [SAFE Stack](https://safe-stack.github.io/). It was created using the dotnet [SAFE Template](https://safe-stack.github.io/docs/template-overview/). If you want to learn more about the template why not start with the [quick start](https://safe-stack.github.io/docs/quickstart/) guide?
+Flappy bird in Fable, with a genetic algorithm that learns how to play.
+[Watch it play here](https://thelegendofando.github.io/SAFE/)
 
 ## Install pre-requisites
 
@@ -20,6 +21,17 @@ To concurrently run the server and the client components in watch mode use the f
 fake build -t Run
 ```
 
+To generate artifacts
+
+```bash
+fake build -t Build
+```
+
+To publish to github.io
+
+```bash
+fake build -t PublishDocs
+```
 
 ## SAFE Stack Documentation
 
