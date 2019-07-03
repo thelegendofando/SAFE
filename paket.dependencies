@@ -1,3 +1,5 @@
+source https://www.nuget.org/api/v2
+
 group Server
     source https://api.nuget.org/v3/index.json
     framework: netcoreapp2.2
@@ -33,4 +35,5 @@ group Build
     nuget Fake.Core.Target
     nuget Fake.DotNet.Cli
     nuget Fake.IO.FileSystem
-
+    nuget Fake.Tools.Git
+    nuget Fake.JavaScript.Npm

@@ -18,7 +18,7 @@ var CONFIG = {
     indexHtmlTemplate: './src/Client/index.html',
     fsharpEntry: './src/Client/Client.fsproj',
     cssEntry: './src/Client/style.scss',
-    outputDir: './src/Client/deploy',
+    outputDir: './output',
     assetsDir: './src/Client/public',
     devServerPort: 8080,
     // When using webpack-dev-server, you may need to redirect some calls
@@ -77,8 +77,10 @@ module.exports = {
     // Add a hash to the output file name in production
     // to prevent browser caching if code changes
     output: {
-        path: resolve(CONFIG.outputDir),
-        filename: isProduction ? '[name].[hash].js' : '[name].js'
+        path: path.join(__dirname, CONFIG.outputDir),
+        filename: isProduction ? '[name].[hash].js' : '[name].js',
+        devtoolModuleFilenameTemplate: info =>
+          path.resolve(info.absoluteResourcePath).replace(/\\/g, '/'),
     },
     mode: isProduction ? 'production' : 'development',
     devtool: isProduction ? 'source-map' : 'eval-source-map',

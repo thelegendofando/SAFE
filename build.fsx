@@ -1,5 +1,6 @@
 #r "paket: groupref build //"
 #load "./.fake/build.fsx/intellisense.fsx"
+#nowarn "52"
 
 #if !FAKE
 #r "netstandard"
@@ -7,10 +8,14 @@
 #endif
 
 open System
-
 open Fake.Core
 open Fake.DotNet
 open Fake.IO
+open Fake.Core.TargetOperators
+open Fake.IO.Globbing.Operators
+open Fake.IO.FileSystemOperators
+open Fake.Tools.Git
+open Fake.JavaScript
 
 let serverPath = Path.getFullName "./src/Server"
 let clientPath = Path.getFullName "./src/Client"
@@ -99,10 +104,22 @@ Target.create "Run" (fun _ ->
     |> ignore
 )
 
+// Where to push generated documentation
+let githubLink = "https://github.com/thelegendofando/SAFE.git"
+let publishBranch = "gh-pages"
+let fableRoot   = __SOURCE_DIRECTORY__
+let temp        = fableRoot </> "temp"
+let docsOuput = fableRoot </> "output"
 
+Target.create "PublishDocs" (fun _ ->
+    Shell.cleanDir temp
+    Repository.cloneSingleBranch "" githubLink publishBranch temp
 
-
-
+    Shell.copyRecursive docsOuput temp true |> Trace.logfn "%A"
+    Staging.stageAll temp
+    Commit.exec temp (sprintf "Update site (%s)" (DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")))
+    Branches.push temp
+)
 
 open Fake.Core.TargetOperators
 
