@@ -18,7 +18,7 @@ type Sprite =
       surroundings: Surroundings;
       traits: Individual }
 
-let traitsPerIndividual = 25
+let traitsPerIndividual = 10
 let populationSize = 200
 
 module Random = 
@@ -54,10 +54,12 @@ module Canvas =
         |> drawImage 0. 0. canvas.width canvas.height
 
     /// Draw some text to show the current iteration
-    let drawIteration (i:int) =
+    let drawIteration (i:int) (r:int) (t:int) =
         let ctx = context
         ctx.font <- "20px Arial";
-        ctx.fillText(i.ToString(), 10., 30.);
+        ctx.fillText(sprintf "gen: %i" i, 10., 30.);
+        ctx.fillText(sprintf "alive: %i" r, 10., 60.);
+        ctx.fillText(sprintf "tube: %i" t, 10., 90.);
 
     ///Fill the canvas with an image
     let drawSprite x y img =
@@ -84,12 +86,19 @@ module Image =
     let tube2 = tube2Data |> Canvas.createImage
 
 module Level =
+    let xGap = 200.
+    let xOffset = Canvas.w * (3./4.) - float xGap
+
     /// Generates the level's tube positions
     let generate n =
-       let xGap = 200
-       let xOffset = Canvas.w * (3./4.) - float xGap
        let yMin, yMax = 32, 160
-       [for i in 1..n -> xOffset+ float (i*xGap), float (yMin+Random.next(yMax))]
+       [for i in 1..n -> xOffset+ (float i)*xGap, float (yMin+Random.next(yMax))]
+
+    let tubeNumber p =
+        (p - Canvas.w/2. - 40.) / xGap
+        |> round
+        |> int
+        |> (+) 1
 
 module Individual =
     /// Randomly generate a trait
@@ -103,7 +112,7 @@ module Individual =
         let distance1 = Random.next 200 |> float
 
         ///roughly
-        let (=.) a b = a < (b + 1.) && a > (b - 1.)
+        let (=.) a b = a < (b + 2.) && a > (b - 2.)
         fun sur -> if (prop sur) =. distance1 then Flap else NoFlap
 
     /// new individual with x number of traits
@@ -111,7 +120,7 @@ module Individual =
 
     /// mutate an individual's set of traits, maybe
     let mutate (rules:Individual) =
-        let mutationRate = 3//%
+        let mutationRate = 20//%
         let newRules =
             List.init rules.Length (fun i -> i, Random.next 100)
             |> List.filter (fun (_, r) -> r <= mutationRate)
@@ -123,20 +132,17 @@ module Individual =
         t |> List.ofArray
 
 module Surroundings =
-    let calculate level sprite =
-        let distanceToTube (x,y) sprite =
+    let calculate (level: (float*float) list) sprite =
+        let distanceToTube sprite (x,y) =
             let dX = x - (sprite.progress + 32.) - sprite.x //Roughly the middle of the tube
             let dY = (sprite.y + 16.) - (y + 50.)
             { xDistanceToNextTube = dX + 46.; yDistanceToMiddleOfNextTube = dY}
 
-        let area = sprite.progress + (Canvas.w)
         let closestSurroundings =
-            level
-            |> List.takeWhile (fun (x,_) -> x < area)
-            |> List.map (fun (x,y) -> distanceToTube (x,y) sprite)
-            |> List.filter (fun x -> x.xDistanceToNextTube > 0.)
-            |> List.minBy (fun x -> x.xDistanceToNextTube)//Closest tube which is ahead of us
-
+            let tube = Level.tubeNumber sprite.progress
+            level.[tube]
+            |> distanceToTube sprite
+        
         { sprite with surroundings = closestSurroundings }
         
 module Sprite =
@@ -162,17 +168,13 @@ module Physics =
         if toFlap then { s with vy = -5. }
         else s
 
-    /// Don't move out of the box
-    let bounded n =
-        min (Canvas.h-32.) (max 0. n)
-
     /// If sprite is in the air, then its "up" velocity is decreasing
     let gravity m =
-        if bounded m.y = m.y then { m with vy = m.vy + 0.2 } else m
+        { m with vy = m.vy + 0.2 }
 
     /// Apply physics - move sprite according to the current velocities
     let physics m =
-        { m with x = m.x + m.vx; y = bounded (m.y + m.vy) }
+        { m with x = m.x + m.vx; y = m.y + m.vy }
 
     /// Move sprite along in the world
     let progress s =
@@ -190,23 +192,25 @@ module Physics =
 
 module Collision =
     //TODO: probably easier using surroundings data
-    let check level sprite =
-        let hitsAnyTube (x,y) game =
-            let tubeX = x - game.progress
+    let check (level:(float * float) list) sprite =
+        let hitsAnyTube sprite (x,y) =
+            let tubeX = x - sprite.progress
 
-            let collidesX = game.x + 32. > tubeX && game.x < tubeX + 32.
-            let collidesTopY = game.y < y
-            let collidesBottomY = game.y > y+100.-32.
+            let collidesX = sprite.x + 32. > tubeX && sprite.x < tubeX + 32.
+            let collidesTopY = sprite.y < y
+            let collidesBottomY = sprite.y > y+100.-32.
 
             collidesX && (collidesTopY || collidesBottomY)
 
         let crashed =
-            level
-            |> List.takeWhile (fun (x,_) -> x < sprite.progress + (Canvas.w / 2.))
-            |> List.map (fun (x,y) -> hitsAnyTube (x,y) sprite)
-            |> List.exists id
+            let tube = Level.tubeNumber sprite.progress
+            level.[tube]
+            |> hitsAnyTube sprite
 
-        { sprite with crashed = crashed }
+        let outOfBounds =
+            sprite.y > Canvas.h-32. || sprite.y < 0.
+        
+        { sprite with crashed = crashed || outOfBounds }
 
 module Population =
     /// breed two parents using crossover
@@ -251,7 +255,7 @@ let origin =
     let topLocation = window.top.location
     topLocation.origin + topLocation.pathname
 
-let fitness = fun x -> (x.progress * x.progress * x.progress)// + (x.surroundings.yDistanceToMiddleOfNextTube * 0.1)
+let fitness = fun x -> (x.progress ** 5.) + ((1./abs x.surroundings.yDistanceToMiddleOfNextTube) ** 2.)
 
 // render everything needed for this frame
 let render level sprites i =
@@ -270,7 +274,10 @@ let render level sprites i =
     |> List.map drawSprite
     |> ignore
 
-    Canvas.drawIteration i
+    let notCrashed = sprites |> List.filter (fun x -> not x.crashed) |> List.length
+    let maxTube = maxP.progress |> Level.tubeNumber
+
+    Canvas.drawIteration i notCrashed maxTube
 
 let level = Level.generate 100
 
@@ -294,7 +301,7 @@ let rec update sprites iteration () =
             (sprites, iteration)
 
     render level sprites iteration
-    window.setTimeout((update sprites iteration), 1000 / 60) |> ignore
+    window.setTimeout((update sprites iteration), 1000 / 100) |> ignore
 
 let population = List.init populationSize (fun _ -> Sprite.start())
 update population 0 ()
