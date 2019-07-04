@@ -18,7 +18,7 @@ type Sprite =
       surroundings: Surroundings;
       traits: Individual }
 
-let traitsPerIndividual = 10
+let traitsPerIndividual = 20
 let populationSize = 200
 
 module Random = 
@@ -165,7 +165,7 @@ module Physics =
     /// Flap if any traits say Flap
     let flap s =
         let toFlap = s.traits |> List.exists (fun t -> t(s.surroundings) = Flap)
-        if toFlap then { s with vy = -5. }
+        if toFlap then { s with vy = -3. }
         else s
 
     /// If sprite is in the air, then its "up" velocity is decreasing
@@ -279,7 +279,7 @@ let render level sprites i =
 
     Canvas.drawIteration i notCrashed maxTube
 
-let level = Level.generate 200
+let level = Level.generate 1000
 
 let rec update sprites iteration () =
     // move a sprite
