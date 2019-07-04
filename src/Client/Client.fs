@@ -279,7 +279,7 @@ let render level sprites i =
 
     Canvas.drawIteration i notCrashed maxTube
 
-let level = Level.generate 100
+let level = Level.generate 200
 
 let rec update sprites iteration () =
     // move a sprite
